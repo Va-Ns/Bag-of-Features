@@ -11,14 +11,14 @@ mkdir RUN_DIR\ Quantized_vector_descriptors
 % disp("Maximum number of workers: " + maxWorkers);
 % pool=parpool(maxWorkers/2);
 
-%% Φόρτωσε τα στοιχεία από το Directory και δημιούργησε το datastore
+%% Φόρτωσε τα στοιχεία από το Directory και δημιούργησε το Datastore
 
 fileLocation = uigetdir();
-datastore=imageDatastore(fileLocation,"IncludeSubfolders",true,"LabelSource", ...
+Datastore = imageDatastore(fileLocation,"IncludeSubfolders",true,"LabelSource", ...
     "foldernames");
-initialLabels = countEachLabel(datastore);
+initialLabels = countEachLabel(Datastore);
 %load("C:\Users\vasil\OneDrive\Υπολογιστής\bag_words_demo\images\faces2\ground_truth_locations.mat");
-%datastore.Labels = renamecats(datastore.Labels,["Background" "Faces"]);
+%Datastore.Labels = renamecats(Datastore.Labels,["Background" "Faces"]);
 
 %% Preprocessing
 
@@ -26,7 +26,7 @@ initialLabels = countEachLabel(datastore);
 s = rng(1);
 
 % Διαχωρισμός των δεδομένων σε εκπαίδευσης και ελέγχου με ποσοστό 70-30
-[Trainds,Testds] = splitEachLabel(datastore,0.7,'randomized');
+[Trainds,Testds] = splitEachLabel(Datastore,0.7,'randomized');
 trainlabelcount=countEachLabel(Trainds);
 testlabelcount=countEachLabel(Testds);
 
@@ -34,7 +34,7 @@ testlabelcount=countEachLabel(Testds);
 % προσδιορισμός του άξονα στο οποίο θα εφαρμοστεί.
 XScale = 200;
 
-% Μετατροπή των datastores ώστε να περιλαμβάνουν grayscale εικόνες
+% Μετατροπή των Datastores ώστε να περιλαμβάνουν grayscale εικόνες
 grayTrainds = transform(Trainds,@im2gray); 
 grayTestds = transform(Testds,@im2gray);
 
@@ -61,12 +61,12 @@ else
 end
 tic;
 
-gray_resized_datastore = Edge_Sampling_Vasilakis(datastore,XScale);
+gray_resized_datastore = Edge_Sampling_Vasilakis(Datastore,XScale);
 
 total_time=toc; fprintf('\nFinished running interest point operator\n');
 
-fprintf('Total number of images: %d, mean time per image: %f secs\n', numel(datastore.Files), ...
-                                                                total_time/numel(datastore.Files));
+fprintf('Total number of images: %d, mean time per image: %f secs\n', numel(Datastore.Files), ...
+                                                                total_time/numel(Datastore.Files));
 
 
 
@@ -76,8 +76,8 @@ fprintf('Total number of images: %d, mean time per image: %f secs\n', numel(data
 load RUN_DIR\interest_points\interest_points.mat
 reset(gray_resized_datastore)
 tic;
-features =cell(1,length(datastore.Files));
-for i = 1:length(datastore.Files)
+features =cell(1,length(Datastore.Files));
+for i = 1:length(Datastore.Files)
     im =read(gray_resized_datastore);
     [features{i},validPoints{i}] = extractFeatures(im,interest_points{i},"Method","SIFT");
 end
@@ -92,7 +92,7 @@ save('RUN_DIR\SIFT_features_of_interest_points\validPoints.mat', ...
 fprintf('\nFinished running descriptor operator\n');
 
 fprintf('Total number of images: %d, mean time per image: %f secs\n', ...
-    length(datastore.Files),total_time/length(datastore.Files));
+    length(Datastore.Files),total_time/length(Datastore.Files));
 
 
 %% Σχηματισμός του Λεξικού (Codebook Formation)
@@ -180,7 +180,7 @@ save("RUN_DIR\Quantized_vector_descriptors\testing_descriptors_vq.mat", ...
 
 classifier = fitcauto(training_descriptors_vq,Trainds.Labels, ...
     'OptimizeHyperparameters','all','HyperparameterOptimizationOptions', ...
-    struct('MaxTime',1e9,'UseParallel',true,'Kfold',10));
+    struct('MaxObjectiveEvaluations',100,'Kfold',10));
 [predictedLabels, scores]= predict(classifier,testing_descriptors_vq);
 
 %% Αξιολόγηση Ταξινομητή
@@ -233,12 +233,3 @@ Accuracy = sum(diag(confusionMatrix)) / sum(confusionMatrix(:))
 % classifier = fitcauto(predFeatures,Trainds.Labels,"Learners","all", ...
 %     "OptimizeHyperparameters","auto","HyperparameterOptimizationOptions", ...
 %     struct('UseParalle',true,'MaxTime',1000));
-
-%% Συνάρτηση εξαγωγής χαρακτηριστικών με SIFT
-function [features,featureMetrics,location]=extractSIFTfeatures(img)
-    img = im2double(img);
-    img = im2gray(img);
-    points = detectSIFTFeatures(img,"NumLayersInOctave",5);
-    [features,validPoints] = extractFeatures(img,points);
-     featureMetrics=validPoints.Metric;location=validPoints.Location;
-end
