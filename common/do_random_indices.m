@@ -23,7 +23,7 @@ if ((Categories.Train_Test_Portion<=0) || (Categories.Train_Test_Portion>=1))
 end
 
 mkdir  RUN_DIR
-      
+rng("default")
 for a=1:length(Categories.Name) %% loop over each category...
   
   %%% randomly choose indices for training and test...

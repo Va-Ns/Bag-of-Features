@@ -1,6 +1,6 @@
 function gray_resized_datastore = Edge_Sampling_Vasilakis(image_file_names,XScale,Interest_Point)
 
-  %% Simple inerest operator that:
+  %% Simple interest operator that:
   %%    1. Runs Canny edge detector on image
   %%    2. Sample Interest_Point.Max_Points points from set of edgels, weighted according to their intensity
   %%    3. For each sample, set scale by drawing from uniform distribution ...
@@ -53,122 +53,122 @@ gray_resized_datastore = transform(gray_datastore, @(z) imresize(z, ...
 
 for i = 1:nImages
 
-  % Reset variables
-  % x = []; xx = [];
-  % y = []; yy = [];
-  % strength = [];
-  % scale = []; score = [];
+    % Reset variables
+    % x = []; xx = [];
+    % y = []; yy = [];
+    % strength = [];
+    % scale = []; score = [];
 
-  % read in image
+    % read in image
 
-  % Η συνάρτηση απαιτεί τις μετασχηματισμένες κατά ποιότητα και μέγεθος
-  % εικόνες. Για να μην χρειαστεί λοιπόν να ενώσουμε τα επιμέρους
-  % datastores μεταξύ τους, μετασχηματίζουμε το αρχικό datastore
-  % ακολουθώντας τις διαδικασίες που γίνονται και στο κεντρικό αρχείο.
+    % Η συνάρτηση απαιτεί τις μετασχηματισμένες κατά ποιότητα και μέγεθος
+    % εικόνες. Για να μην χρειαστεί λοιπόν να ενώσουμε τα επιμέρους
+    % datastores μεταξύ τους, μετασχηματίζουμε το αρχικό datastore
+    % ακολουθώντας τις διαδικασίες που γίνονται και στο κεντρικό αρχείο.
 
 
-  im=read(gray_resized_datastore);
-  %imshow(im)
-  % Get size
-  [imx,imy,imz]=size(im);
-     
-  % Convert to grayscale if not already so...
-  if (imz>1)
-    im=rgb2gray(im);
-  end
-  
-  % Find canny edges using Oxford VGG code
-  curves=vgg_xcv_segment(uint8(im),'canny_edges');   
- 
+    im=read(gray_resized_datastore);
+    %imshow(im)
+    % Get size
+    [imx,imy,imz]=size(im);
 
-  % Concatenate all edgel segments together into one big array
-  for b=1:length(curves)
-    xx = [ xx , curves{b}(1,:)]; %% x location
-    yy = [ yy , curves{b}(2,:)]; %% y location
-    strength = [ strength , curves{b}(3,:)]; %% edge strength
-  end
-  
-  % Total number of edge pixels exracted from image
-  nEdgels = length(strength);
-  
-  
-  if (nEdgels>0) %% check that some edgels were found in the image
-    
-    % Obtain sampling density
-    % choose btw. uniform and weighted towards those edgels with a
-    % stronger edge strength 
-    if Interest_Point.Weighted_Sampling
-      sample_density = strength / sum(strength);
-    else
-      sample_density = ones(1,nPoints)/nPoints;
+    % Convert to grayscale if not already so...
+    if (imz>1)
+        im=rgb2gray(im);
     end
-    
-    % Choose how many points to sample
-    nPoints_to_Sample = Interest_Point.Max_Points;
-    
-    % draw samples from density
-    samples = discrete_sampler(sample_density,nPoints_to_Sample,1);
-    
-    % Lookup points corresponding to samples 
-    x{i} = xx(samples);
-    y{i} = yy(samples);
-    interest_points{i} =[x{i}',y{i}'];
-    % now draw scales from uniform
-    scale{i} = rand(1,nPoints_to_Sample)*(max(Interest_Point.Scale)-min(Interest_Point.Scale))+min(Interest_Point.Scale);
-    
-    % get scores for each points (its edge strength)
-    score{i} = strength(samples);
-    
-  else % No edgels found in image at allInterest_Point.Weighted_Sampling    = 1;
+
+    % Find canny edges using Oxford VGG code
+    curves=vgg_xcv_segment(uint8(im),'canny_edges');
 
 
-    % Set all output variables for the frame to be empty
-    x = [];
-    y = [];
-    scale = [];
-    score = [];
-    
-  end
-  
-    
-  if DEBUG
-    
-    
-    % Show image with edgels marked
-    figure(1); clf;
-    imagesc(im);
-    colormap(gray);
-    hold on;
-    plot(xx,yy,'m.','MarkerSize',8)
-    title('Raw edgels');
-    
-    % Show image with region marked
-    figure(2); clf;
-    imagesc(im);
-    colormap(gray);
-    hold on;
-    
-    % for b=1:length(scale)
-      plot(x{i},y{i},'b.','MarkerSize',10);
-      %drawcircle(y{b},x{b},scale{b}*2+1,'g',1);
-      viscircles(interest_points{i}, scale{i}/2,'Color','g');
-      title(['Interest regions on image: ',num2str(i)]);
+    % Concatenate all edgel segments together into one big array
+    for b=1:length(curves)
+        xx = [ xx , curves{b}(1,:)]; %% x location
+        yy = [ yy , curves{b}(2,:)]; %% y location
+        strength = [ strength , curves{b}(3,:)]; %% edge strength
     end
-    
-    
-    
-   
-  end
-    
-  
-  fprintf('Image: %d from: %d\n',i,nImages);
-  % output_file_names{i} = strjoin(output_file_names{i},'');
-  % save('RUN_DIR\interest_points\output_file_names.mat','output_file_names');
-  save('RUN_DIR\interest_points\x.mat','x');
-  save('RUN_DIR\interest_points\y.mat','y');
-  save('RUN_DIR\interest_points\scale.mat','scale');
-  save('RUN_DIR\interest_points\score.mat','score');
-  save('RUN_DIR\interest_points\interest_points.mat','interest_points');
-  
-  
+
+    % Total number of edge pixels exracted from image
+    nEdgels = length(strength);
+
+
+    if (nEdgels>0) %% check that some edgels were found in the image
+
+        % Obtain sampling density
+        % choose btw. uniform and weighted towards those edgels with a
+        % stronger edge strength
+        if Interest_Point.Weighted_Sampling
+            sample_density = strength / sum(strength);
+        else
+            sample_density = ones(1,nPoints)/nPoints;
+        end
+
+        % Choose how many points to sample
+        nPoints_to_Sample = Interest_Point.Max_Points;
+
+        % draw samples from density
+        samples = discrete_sampler(sample_density,nPoints_to_Sample,1);
+
+        % Lookup points corresponding to samples
+        x{i} = xx(samples);
+        y{i} = yy(samples);
+        interest_points{i} =[x{i}',y{i}'];
+        % now draw scales from uniform
+        scale{i} = rand(1,nPoints_to_Sample)*(max(Interest_Point.Scale)-min(Interest_Point.Scale))+min(Interest_Point.Scale);
+
+        % get scores for each points (its edge strength)
+        score{i} = strength(samples);
+
+    else % No edgels found in image at allInterest_Point.Weighted_Sampling    = 1;
+
+
+        % Set all output variables for the frame to be empty
+        x = [];
+        y = [];
+        scale = [];
+        score = [];
+
+    end
+
+
+    if DEBUG
+
+
+        % Show image with edgels marked
+        figure(1); clf;
+        imagesc(im);
+        colormap(gray);
+        hold on;
+        plot(xx,yy,'m.','MarkerSize',8)
+        title('Raw edgels');
+
+        % Show image with region marked
+        figure(2); clf;
+        imagesc(im);
+        colormap(gray);
+        hold on;
+
+        % for b=1:length(scale)
+        plot(x{i},y{i},'b.','MarkerSize',10);
+        %drawcircle(y{b},x{b},scale{b}*2+1,'g',1);
+        viscircles(interest_points{i}, scale{i}/2,'Color','g');
+        title(['Interest regions on image: ',num2str(i)]);
+    end
+
+
+
+
+end
+
+
+fprintf('Image: %d from: %d\n',i,nImages);
+% output_file_names{i} = strjoin(output_file_names{i},'');
+% save('RUN_DIR\interest_points\output_file_names.mat','output_file_names');
+save('RUN_DIR\interest_points\x.mat','x');
+save('RUN_DIR\interest_points\y.mat','y');
+save('RUN_DIR\interest_points\scale.mat','scale');
+save('RUN_DIR\interest_points\score.mat','score');
+save('RUN_DIR\interest_points\interest_points.mat','interest_points');
+
+
 end

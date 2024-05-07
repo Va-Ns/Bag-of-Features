@@ -15,17 +15,17 @@ EXPERIMENT_TYPE = 'plsa';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Directory holding the experiment 
-RUN_DIR = "C:\Users\vasil\MATLAB Drive\Thesis\Matlab Projects\" + ...
-    "bag_words_demo\experiments\bag_of_words";
+RUN_DIR = "C:\Users\vasil\OneDrive\Υπολογιστής\Github projects\" + ...
+          "Bag of Features\common\RUN_DIR";
 %RUN_DIR = [ 'C:\MATLAB6p5\demos\experiments\toy_plsa' ];
 
 %%% Directory holding all the source images
-IMAGE_DIR = "C:\Users\vasil\MATLAB Drive\Thesis\Matlab Projects\" + ...
-    "bag_words_demo\images";
+IMAGE_DIR = "C:\Users\vasil\OneDrive\Υπολογιστής\Github projects\" + ...
+            "Bag of Features\images";
 
 %% Codebook directory - holds all VQ codebooks 
-CODEBOOK_DIR = "C:\Users\vasil\MATLAB Drive\Thesis\Matlab Projects\" + ...
-    "bag_words_demo\Codebook";   
+CODEBOOK_DIR = "C:\Users\vasil\OneDrive\Υπολογιστής\Github projects\Bag of " + ...
+               "Features\common\RUN_DIR\Codebook";   
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% GLOBAL PARAMETERS
@@ -70,13 +70,13 @@ Global.Model_File_Name = 'model_';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Image classes to use (cell array)
-Categories.Name = {'faces2',
+Categories.Name = {'faces2',...
                    'background_caltech'
                   };
 %% Frame range for each of the classes to use 
 %% (must have an entry for each of the classes in Categories.Name)
-Categories.Frame_Range = { [1:100] ,
-                           [1:100]
+Categories.Frame_Range = { 1:100 ,...
+                           1:100
                          };
 
 %% relative sizes of training and test sets 
@@ -84,7 +84,7 @@ Categories.Frame_Range = { [1:100] ,
 Categories.Train_Test_Portion = 0.7;
 
 %% load up random permutation of frame numbers
-%do_random_indices(Categories)
+
 %"C:\Users\vasil\MATLAB Drive\Thesis\Matlab Projects\bag_words_demo\experiments\bag_of_words"
 if exist('RUN_DIR\random_indices.mat')
     load('RUN_DIR\random_indices.mat');
