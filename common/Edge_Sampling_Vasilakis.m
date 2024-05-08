@@ -21,7 +21,7 @@ function gray_resized_datastore = Edge_Sampling_Vasilakis(image_file_names,XScal
   %%          score - importance measure of each point, determined by edge strength of pixels (1 x Interest_Point.Max_Points).
 
     
-  % This code snippet is formed using as a base the code provided  by R.Fergus 
+  % This code snippet is formed having as a base the code provided  by R.Fergus 
   % (fergus@csail.mit.edu) at the ICCV of 2005 (03/10/05).  
      
     
@@ -32,10 +32,12 @@ DEBUG = 0
 
 %%% Default parameters section
 if (nargin<3)
+
    fprintf('Edge_Sampling: No settings specified, so using defaults...\n');
    Interest_Points.Max_Points = 200;
    Interest_Points.Weighted_Sampling = 1;
    Interest_Points.Weighted_Scale = 1;
+
 end
 
 %%% Get total number of images
