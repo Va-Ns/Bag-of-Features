@@ -21,7 +21,8 @@ function gray_resized_datastore = Edge_Sampling_Vasilakis(image_file_names,XScal
   %%          score - importance measure of each point, determined by edge strength of pixels (1 x Interest_Point.Max_Points).
 
     
-  %%% R.Fergus (fergus@csail.mit.edu)  03/10/05.  
+  % This code snippet is formed using as a base the code provided  by R.Fergus 
+  % (fergus@csail.mit.edu) at the ICCV of 2005 (03/10/05).  
      
     
 % DEBUG switch. Normally set to 0 but if set to >=1 will start plotting

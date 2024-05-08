@@ -21,11 +21,12 @@ function gray_resized_datastore = Edge_Sampling_Vasilakis(image_file_names,XScal
   %%          score - importance measure of each point, determined by edge strength of pixels (1 x Interest_Point.Max_Points).
 
     
-  %%% R.Fergus (fergus@csail.mit.edu)  03/10/05.  
+  % This code snippet is formed using as a base the code provided  by R.Fergus 
+  % (fergus@csail.mit.edu) at the ICCV of 2005 (03/10/05).  
      
     
-%%% DEBUG switch. Normally set to 0 but if set to >=1 will start plotting
-%%% out results so user can check operation of the fucntion    
+% DEBUG switch. Normally set to 0 but if set to >=1 will start plotting
+% out results so user can check operation of the function    
 eval('config_file_1')
 DEBUG = 0
 
@@ -168,8 +169,10 @@ end
 
 
 fprintf('Image: %d from: %d\n',i,nImages);
+
 % output_file_names{i} = strjoin(output_file_names{i},'');
 % save('RUN_DIR\interest_points\output_file_names.mat','output_file_names');
+
 save('RUN_DIR\interest_points\x.mat','x');
 save('RUN_DIR\interest_points\y.mat','y');
 save('RUN_DIR\interest_points\scale.mat','scale');
