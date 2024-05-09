@@ -57,9 +57,8 @@ for a=1:length(Categories.Name) %% loop over each category...
 
   
   if (nTesting_Images<=1)
-
+      
     fprintf('Warning: too few testing images allocated - please increase Train_Test_Portion\n');
-
   end
   
 end
@@ -69,4 +68,5 @@ save('RUN_DIR\random_indices.mat',"random_indices");
 save('RUN_DIR\train_frames.mat',"train_frames");
 save('RUN_DIR\test_frames.mat',"test_frames");
 
-end
+    
+  

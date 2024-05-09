@@ -52,13 +52,13 @@ if strcmp(Interest_Point.Type,'Edge_Sampling')
   
 elseif strcmp(Interest_Point.Type,'Another_Type')
   
-  %% Add your favourite interest point operator here....
+  %% Add your favorite interest point operator here....
   
 else
   error('Unknown type of operator');
 end
 
-total_time=toc;
+total_time = toc;
 
 fprintf('\nFinished running interest point operator\n');
 fprintf('Total number of images: %d, mean time per image: %f secs\n', ...

@@ -1,24 +1,24 @@
 function gray_resized_datastore = Edge_Sampling_Vasilakis(image_file_names,XScale,Interest_Point)
 
   %% Simple interest operator that:
-  %%    1. Runs Canny edge detector on image
-  %%    2. Sample Interest_Point.Max_Points points from set of edgels, weighted according to their intensity
-  %%    3. For each sample, set scale by drawing from uniform distribution ...
-  %%        over Interest_Point.Scale
+  %    1. Runs Canny edge detector on image
+  %    2. Sample Interest_Point.Max_Points points from set of edgels, weighted according to their 
+  %       intensity
+  %    3. For each sample, set scale by drawing from uniform distribution over Interest_Point.Scale
     
   %% Inputs: 
-  %%      1. image_file_names - cell array of filenames of all images to be processed
-  %%      2. output_file_names - cell array of output filenames
-  %%      3. Interest_Point - structure holding all settings of the interest operator
+  %      1. image_file_names - cell array of filenames of all images to be processed
+  %      2. output_file_names - cell array of output filenames
+  %      3. Interest_Point - structure holding all settings of the interest operator
   
-  %% Outputs:
-  %%      None - it saves the results for each image to the files
-  %%      specified in output_file_names.
-  %%      Each file holds 4 variables:
-  %%          x - x coordinates of points (1 x Interest_Point.Max_Points)
-  %%          y - y coordinates of points (1 x Interest_Point.Max_Points)
-  %%          scale - characteristic scale of points (radius, in pixels)  (1 x Interest_Point.Max_Points)
-  %%          score - importance measure of each point, determined by edge strength of pixels (1 x Interest_Point.Max_Points).
+  % Outputs:
+  %      None - it saves the results for each image to the files
+  %      specified in output_file_names.
+  %      Each file holds 4 variables:
+  %          x - x coordinates of points (1 x Interest_Point.Max_Points)
+  %          y - y coordinates of points (1 x Interest_Point.Max_Points)
+  %          scale - characteristic scale of points (radius, in pixels)  (1 x Interest_Point.Max_Points)
+  %          score - importance measure of each point, determined by edge strength of pixels (1 x Interest_Point.Max_Points).
 
     
   % This code snippet is formed having as a base the code provided  by R.Fergus 
@@ -96,7 +96,6 @@ for i = 1:nImages
         if Interest_Point.Weighted_Sampling
 
             sample_density = strength / sum(strength);
-
 
         else
 
