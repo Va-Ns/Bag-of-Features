@@ -27,8 +27,9 @@ function gray_resized_datastore = Edge_Sampling_Vasilakis(image_file_names,XScal
     
 % DEBUG switch. Normally set to 0 but if set to >=1 will start plotting
 % out results so user can check operation of the function    
-eval('config_file_1')
-DEBUG = 0
+
+config_file_1
+DEBUG = 0;
 
 %%% Default parameters section
 if (nargin<3)
@@ -36,7 +37,7 @@ if (nargin<3)
    fprintf('Edge_Sampling: No settings specified, so using defaults...\n');
    Interest_Points.Max_Points = 200;
    Interest_Points.Weighted_Sampling = 1;
-   Interest_Points.Weighted_Scale = 1;
+   Interest_Points.Weighted_Scale = 1; %#ok<STRNU>
 
 end
 
@@ -72,15 +73,20 @@ for i = 1:nImages
     im = read(gray_resized_datastore);
 
     % Find canny edges using Oxford VGG code
-    curves=vgg_xcv_segment(uint8(im),'canny_edges');
+    curves = vgg_xcv_segment(uint8(im),'canny_edges');
 
 
     % Concatenate all edgel segments together into one big array
-    for b=1:length(curves)
+    for b = 1 : length(curves)
+        
+        % x location    
+        xx = [ xx , curves{b}(1,:)];  %#ok<AGROW>
+        
+        % y location
+        yy = [ yy , curves{b}(2,:)];  %#ok<AGROW>
 
-        xx = [ xx , curves{b}(1,:)]; %% x location
-        yy = [ yy , curves{b}(2,:)]; %% y location
-        strength = [ strength , curves{b}(3,:)]; %% edge strength
+        % edge strength
+        strength = [ strength , curves{b}(3,:)];  %#ok<AGROW>
 
     end
 
@@ -110,16 +116,16 @@ for i = 1:nImages
         samples = discrete_sampler(sample_density,nPoints_to_Sample,1);
 
         % Lookup points corresponding to samples
-        x{i} = xx(samples);
-        y{i} = yy(samples);
-        interest_points{i} =[x{i}',y{i}'];
+        x{i} = xx(samples); %#ok<AGROW>
+        y{i} = yy(samples); %#ok<AGROW>
+        interest_points{i} =[x{i}',y{i}']; %#ok<AGROW>
 
         % now draw scales from uniform
         scale{i} = rand(1,nPoints_to_Sample)*(max(Interest_Point.Scale)- ...
-                                               min(Interest_Point.Scale))+min(Interest_Point.Scale);
+                                               min(Interest_Point.Scale))+min(Interest_Point.Scale); %#ok<AGROW>
 
         % get scores for each points (its edge strength)
-        score{i} = strength(samples);
+        score{i} = strength(samples); %#ok<AGROW>
 
     else % No edgels found in image at allInterest_Point.Weighted_Sampling    = 1;
 
@@ -137,7 +143,7 @@ for i = 1:nImages
 
 
         % Show image with edgels marked
-        figure; 
+        figure; %#ok<UNRCH>
         clf;
 
         imagesc(im);
