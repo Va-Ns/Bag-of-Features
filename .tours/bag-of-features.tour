@@ -4,27 +4,27 @@
   "steps": [
     {
       "file": "Bag_Of_Features.m",
-      "description": "1) Ξεκινάμε με την εκκαθάριση της μνήμης και του Workspace καθώς και το κλείσιμο οποιασδήποτε ενεργής απεικόνισης\r\n2) Δημιουργούμε 3 διαφορετικούς φακέλους στους οποίους θα αποθηκευθούν: \r\n   - Το Λεξικό\r\n   - Τα SIFT χαρακτηριστικά των σημείων ενδιαφέροντος\r\n   - Τα κβαντισμένα διανύσματα",
+      "description": "1) We start by clearing the memory and Workspace and closing any active imaging\r\n2) We create 3 different folders in which they will store: \r\n   - The Dictionary\r\n   - The SIFT features of the points of interest\r\n   - The quantized vectors",
       "line": 3
     },
     {
       "file": "Bag_Of_Features.m",
-      "description": "Προαιρετικό κομμάτι κώδικα που δίνει την δυνατότητα εντοπισμού των διαθέσιμων πυρήνων που μπορούν να δεσμευτούν για χρήση πολυεπεξεργασίας. Από πειράματα που έχουν γίνει εντοπίστηκε ότι τόσο από θέμα διαχείρισης της μνήμης όσο και από θέμα αποδοτικότητας, η χρήση των μισών διαθέσιμων πόρων αποφέρει συνήθως καλύτερα αποτελέσματα.\r\n\r\n**Σημαντική σημείωση!** \r\n\r\nΗ χρήση της parpool ισοδυναμεί με αύξηση της χρήσης της μνήμης κατά το ήμισυ. Αυτό σημαίνει ότι προκειμένου να μπορέσει να εκτελεστεί το MATLAB να χρησιμοποιήσει την δυνατότητα της πολυεπεξεργασίας, χρειάζεται να δεσμεύσει τουλάχιστον 50% περισσότερη μνήμη από την σειριακή εκτέλεση του script",
+      "description": "Optional code segment that enables the identification of available cores that can be reserved for multiprocessing use. Experiments have shown that both from a memory management and efficiency point of view, using half of the available resources usually yields better results.\r\n\r\n**Important note!** \r\n\r\nUsing parpool is equivalent to increasing memory usage by half. This means that in order for MATLAB to be able to use the multiprocessing feature, it needs to allocate at least 50% more memory than the serial execution of the script\r\n\r\nTranslated with DeepL.com (free version)",
       "line": 9
     },
     {
       "file": "Bag_Of_Features.m",
-      "description": "Μέσω αυτής της εντολής, δίνεται η δυνατότητα στον χρήστη να επιλέξει τον φάκελο στον οποίο έχει αποθηκεύσει τα δεδομένα. Στην προκείμενη περίπτωση αναζητούμε να επιλέξουμε τον φάκελο με ονομασία *images*.",
+      "description": "This command allows the user to select the folder in which the data is stored. In this case we are looking to select the folder named *images*.",
       "line": 16
     },
     {
       "file": "Bag_Of_Features.m",
-      "description": "Το βήμα αυτό ζητά από τον χρήστη να παραθέσει την τοποθεσία της συνάρτησης *Edge_Sampling_Vasilakis*. Αφού πρώτα λαμβάνεται η παρούσα τοποθεσία στην οποία εκτελείται το script, συγκρίνονται οι δυο θέσεις. Αν είναι ίδιες τότε δεν λαμβάνεται καμία ενέργεια. Διαφορετικά, αλλάζει το directory σε εκείνο που στεγάζεται η ζητούμενη συνάρτηση",
+      "description": "This step asks the user to provide the location of the *Edge_Sampling_Vasilakis* function. After first obtaining the current location in which the script is running, the two locations are compared. If they are identical then no action is taken. Otherwise, the directory is changed to the one where the requested function is hosted",
       "line": 52
     },
     {
       "file": "common/Edge_Sampling_Vasilakis.m",
-      "description": "Κύριος στόχος του *imageDatastore* είναι να μπορέσει να εξοικονομήσει μνήμη στο πρόγραμμα. Ένας από τους τρόπους με τους οποίους επιτυγχάνει το προηγούμενο είναι με το να μην φορτώνει τις εικόνες (ή τα δεδομένα όταν έχουμε άλλα είδη datastores) παρά μόνο όταν ο χρήστης τις χρειάζεται. Η διαδικασία αυτή μπορεί να αναχθεί και σε επιπρόσθετες διαδικασίες που αφορούν εικόνες όπως η μετατροπή ή ο μετασχηματισμός των εικόνων. Με βήμα το τελευταίο, παρατηρείται ότι μέσω της *transform* δίνεται η δυνατότητα του έμμεσου μετασχηματισμού των εικόνων πρώτα σε grayscale και στην συνέχεια της αλλαγής του μεγέθους της εικόνας με την χρήση διγραμμικής παρεμβολής (*bilinear interpolation*) για την διατήρηση του aspect ratio της αρχικής εικόνας.\r\n\r\n**Σημείωση**\r\n\r\nΕδώ τα παραγόμενα datastores δεικτοδοτούν μέσα στα προϋπάρχοντα datastores όπου τα τελευταία αποθηκεύονται σε κελιά, οπότε εφιστάται πολύ μεγάλη προσοχή στην δεικτοδότηση των δεδομένων.\r\n\r\n![Gray Datastore](.tours\\Images\\grayDatastore.png)\r\n",
+      "description": "The primary purpose of *imageDatastore* is to be able to save memory in the program. One of the ways in which it achieves the former is by not loading images (or data when we have other kinds of datastores) except when the user needs them. This process can also be scaled up to additional processes involving images such as image conversion or transformation. With the latter step, it is observed that through *transform* it is possible to implicitly transform images first to grayscale and then resize the image using *bilinear interpolation* to preserve the aspect ratio of the original image.\r\n\r\n**Note**\r\n\r\nHere the generated datastores are indexed within the pre-existing datastores where the latter are stored in cells, so a lot of attention is advised in indexing the data.\r\n\r\n![Gray Datastore](.tours\\Images\\grayDatastore.png)\r\n",
       "line": 50
     }
   ]
