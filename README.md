@@ -25,6 +25,5 @@ Contributions are welcome. Please submit a pull request if you have something to
 
 This project is licensed under the MIT License. See the LICENSE file for details.
 
-![image](https://github.com/NickTy-byte/Bag-of-Features/assets/68824495/9650581c-220e-4629-a115-e3b0cc97cda7)
-![image](https://github.com/NickTy-byte/Bag-of-Features/assets/68824495/5bfa844f-2bf3-4dd8-8340-688351ea1d6c)
+![image](https://github.com/NickTy-byte/Bag-of-Features/assets/68824495/9650581c-220e-4629-a115-e3b0cc97cda7) ![image](https://github.com/NickTy-byte/Bag-of-Features/assets/68824495/5bfa844f-2bf3-4dd8-8340-688351ea1d6c)
 
