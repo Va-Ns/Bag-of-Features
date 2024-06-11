@@ -1,40 +1,37 @@
-%% Εκκαθάριση
+%% Clean up
 
 clear;clc;close('all');
 
-% Θέτουμε ένα seed για καλή επαναληψιμότητα του πειράματος
+
+% Set a seed for reproducibility of the experiment
 s = rng(1);
 
-mkdir RUN_DIR\ Codebook
-mkdir RUN_DIR\ SIFT_features_of_interest_points
-mkdir RUN_DIR\ Quantized_vector_descriptors
+mkdir RUN_DIR\Codebook
+mkdir RUN_DIR\SIFT_features_of_interest_points
+mkdir RUN_DIR\Quantized_vector_descriptors
 
-%% Αρχικοποίηση της parpool
+%% Initiate the parpool in case you need man power
 % delete(gcp)
 % maxWorkers = maxNumCompThreads;
 % disp("Maximum number of workers: " + maxWorkers);
 % pool = parpool(maxWorkers/2);
 
-%% Φόρτωσε τα στοιχεία από το Directory και δημιούργησε το Datastore
-
+%% Load the data from the Directory and create the Datastore
 fileLocation = uigetdir();
-Datastore = imageDatastore(fileLocation,"IncludeSubfolders",true,"LabelSource", ...
-    "foldernames");
+Datastore = imageDatastore(fileLocation,"IncludeSubfolders",true,"LabelSource","foldernames");
 initialLabels = countEachLabel(Datastore);
-%load("C:\Users\vasil\OneDrive\Υπολογιστής\bag_words_demo\images\faces2\ground_truth_locations.mat");
-%Datastore.Labels = renamecats(Datastore.Labels,["Background" "Faces"]);
+
 
 %% Preprocessing
 
+% Initialize the value by which the scaling will be performed and specify the axis to which it will 
+% be applied.
 
-% Αρχικοποίηση της τιμής κατά την οποία θα γίνει η κλιμάκωση και προσδιορισμός του άξονα στο οποίο 
-% θα εφαρμοστεί.
 XScale = 200;
 
-% Προκειμένου να μπορέσουμε να εκτελέσουμε τον αλγόριθμο εντοπισμού των σημείων ενδιαφέροντος, θα 
-% χρειαστεί να αλλάξουμε directory ώστε να μπορέσει να εκτελεστεί ένα συγκεκριμένο executable. 
-% Για ευκολία δίνετε η δυνατότητα στον χρήστη να επιλέξει χειροκίνητα το μέρος όπου έχει αποθηκεύσει
-% την συνάρτηση Edge_Sampling.m
+% In order to be able to run the interest point detection algorithm, we will need to change the 
+% directory so that a specific executable can be executed. For convenience, the user is given the 
+% option to manually select the place where the Edge_Sampling.m function is stored.
 
 getcurrentDirectory = pwd; 
 EdgeSamplingLocation = uigetdir();
@@ -56,10 +53,7 @@ fprintf('\nFinished running interest point operator\n');
 fprintf('Total number of images: %d, mean time per image: %f secs\n', numel(Datastore.Files), ...
                                                                 total_time/numel(Datastore.Files));
 
-
-
-%% Εξαγωγή χαρακτηριστικών χρησιμοποιώντας τον SIFT
-
+%% Feature extraction using SIFT
 
 load RUN_DIR\interest_points\interest_points.mat
 reset(Gray_resized_datastore)
@@ -73,21 +67,21 @@ for i = 1:length(Datastore.Files)
 
 end
 
-total_time=toc; clear im
+total_time=toc;
 
 
-save('RUN_DIR\SIFT_features_of_interest_points\SIFT_features.mat', ...
-    'features');
-save('RUN_DIR\SIFT_features_of_interest_points\validPoints.mat', ...
-    'validPoints');
+save('RUN_DIR\SIFT_features_of_interest_points\SIFT_features.mat','features');
+save('RUN_DIR\SIFT_features_of_interest_points\validPoints.mat','validPoints');
 
 fprintf('\nFinished running descriptor operator\n');
 
-fprintf('Total number of images: %d, mean time per image: %f secs\n', ...
-    length(Datastore.Files),total_time/length(Datastore.Files));
+fprintf('Total number of images: %d, mean time per image: %f secs\n', length(Datastore.Files), ...
+    total_time/length(Datastore.Files));
 
 
-%% Σχηματισμός του Λεξικού (Codebook Formation)
+%% Codebook Formation
+
+[Trainds,Testds] = splitEachLabel(Gray_resized_datastore.UnderlyingDatastores{:},0.75,'randomized');
 
 Indices = getindices(Trainds,Testds);
 descriptors = [];
@@ -109,12 +103,11 @@ for i=1:length(Indices.Train_Indices)
         
     fprintf('Currently at training image:%d\n',i);
     
-    [~,index] = pdist2(Codebook,double(features{Indices.Train_Indices(i)}), ...
-                                        'euclidean','Smallest',1);
+    [~,index] = pdist2(Codebook,double(features{Indices.Train_Indices(i)}),'euclidean','Smallest',1);
     N = histcounts(index, size(Codebook,1));
     
-    % Προσοχή! Για να προκύψουν τα τελικά ποσοστά για το BoF χρειάζεται να διαιρούμε με το νούμερο 
-    % των keypoints ανά εικόνα!
+    % Beware! To obtain the final percentages for BoF we need to divide by the number of keypoints 
+    % per image!
 
     training_descriptors_vq(i,:)= N./length(index);
    
@@ -124,104 +117,29 @@ for i=1:length(Indices.Test_Indices)
         
     fprintf('Currently at testing image:%d\n',i);
     
-    [~,index] = pdist2(Codebook,double(features{Indices.Test_Indices(i)}), ...
-                                        'euclidean','Smallest',1);
+    [~,index] = pdist2(Codebook,double(features{Indices.Test_Indices(i)}),'euclidean','Smallest',1);
     N = histcounts(index, size(Codebook,1));
     testing_descriptors_vq(i,:)= N./length(index);
    
 end
-save("RUN_DIR\Quantized_vector_descriptors\training_descriptors_vq.mat", ...
-        'training_descriptors_vq');
-save("RUN_DIR\Quantized_vector_descriptors\testing_descriptors_vq.mat", ...
-        'testing_descriptors_vq');
-
-%% k-means clustering
-
-% Η μεταβλητή idx αναμένεται να επιστρέψει σε ποια κέντρα
-% κατηγοριοποιήθηκε η κάθε παρατήρηση. Γι' αυτό κι όλας παρατηρούμε ότι οι
-% διαστάσεις της idx είναι οι ίδιες με των δεδομένων εκπαίδευσης.
-
-% Η μεταβλητή C επιστρέφει την τοποθεσία των κεντροειδών. Η τοποθεσία του
-% κάθε κέντρου στην idx αντικατοπτρίζεται από την σειρά στην μεταβλητή C.
-% Για παράδειγμα η τοποθεσία του πρώτου κέντρου, idx(1), στον πολυδιάστατο
-% χώρο των χαρακτηριστικών, είναι πρακτικά η πρώτη σειρά της C, δηλαδή
-% C(1,:).
-
-% Η μεταβλητή sumd επιστρέφει τα within-cluster αθροίσματα των αποστάσεων
-% των παρατηρήσεων από τα κέντρα τους στα οποία έχουν ανατεθεί. Ένα πολύ
-% σημαντικό μέτρο, καθώς όσο μικρότερο είναι το άθροισμα τόσο καλύτερα
-% έχουν ανατεθεί τα δεδομένα στα κέντρα τους.
-
-% Μεγάλη προσοχή όμως! Η within-cluster μετρική επηρεάζεται άμεσα από το
-% πλήθος των παρατηρήσεων, δηλαδή τον αριθμό των δεδομένων που έχουμε.
-% Όσο το πλήθος αυξάνεται, τόσο μεγαλύτερα θα βγαίνουν τα αθροίσματα των
-% των αποστάσεων. Αυτό σημαίνει λοιπόν ότι η WCSS (Winthin-Cluster Sum of
-% Squares) δεν συχνά συγκρίσιμη μεταξύ των clusters με διαφορετικά νούμερα
-% παρατηρήσεων. Για να συγκρίνουμε τις within-cluster διαφοροποιήσει διαφο
-% ρετικών clusters χρειαζόμαστε την μέση απόσταση ανά κέντρο.
-
-% Η μεταβλητή D επιστρέφει τις αποστάσεις από κάθε σημείο προς κάθε κέντρο.
-% for i=1:numel(unique(grayTrainds.UnderlyingDatastores{:}.Labels))
-
+save("RUN_DIR\Quantized_vector_descriptors\training_descriptors_vq.mat",'training_descriptors_vq');
+save("RUN_DIR\Quantized_vector_descriptors\testing_descriptors_vq.mat",'testing_descriptors_vq');
     
-
-
-
-    
-%% Εκπαιδεύοντας έναν ταξινομητή
+%% Training a Classifier
 
 classifier = fitcauto(training_descriptors_vq,Trainds.Labels, ...
     'OptimizeHyperparameters','all','HyperparameterOptimizationOptions', ...
     struct('MaxObjectiveEvaluations',100,'Kfold',10));
 [predictedLabels, scores]= predict(classifier,testing_descriptors_vq);
 
-%% Αξιολόγηση Ταξινομητή
+%% Evaluating the Classifier
 
-confusionMatrix = confusionmat(Testds.Labels,predictedLabels)
+confusionMatrix = confusionmat(Testds.Labels,predictedLabels);
 Accuracy = sum(diag(confusionMatrix)) / sum(confusionMatrix(:))
 
-%% Απεικόνιση του Bag of Words για τη πρώτη εικόνα 
+%% Απεικόνιση του Bag of Words 
 
-% bar(TrainingBoF(1,:),'EdgeColor','red'); xticks(1:numCentroids);
-% xticklabels(Labels); ytickformat("percentage")
-
-%% Απεικόνιση του χώρου των χαρακτηριστικών
-
-% Assume X_train is your training data and X_test is your testing data
-% Assume idx_train is the cluster assignments for the training data
-% Assume C is the centroids of the clusters
-% Assume idx_test is the cluster assignments for the testing data
-
-% % Use t-SNE to reduce dimensions
-% X_train_tsne = tsne(trainfeatureMatrix);
-% X_test_tsne = tsne(testfeatureMatrix);
-% C_tsne = tsne(assignments);
-%
-% % Create a scatter plot for the training data
-% gscatter(X_train_tsne(:,1), X_train_tsne(:,2), Labels, numCentroids);
-% hold on;
-%
-% % Create a scatter plot for the centroids
-% scatter(C_tsne(:,1), C_tsne(:,2), 100, 'k', 'x');
-% hold on;
-%
-% % Create a scatter plot for the testing data
-% gscatter(X_test_tsne(:,1), X_test_tsne(:,2),Labels, numCentroids);
-% hold off;
-%
-% % Add a colorbar and title for your plot
-% colorbar;
-% title('t-SNE visualization of training data, centroids, and testing data');
-%
-% bag = bagOfFeatures(Trainds,'GridStep',[24,24],'BlockWidth',[32 48 64 ...
-%     96 128]);
-% predFeatures = encode(bag,Trainds);
-% 
-% predFeaturesTest = encode(bag,Testds);
-%
-% 
-% categoryClassifier = trainImageCategoryClassifier(Trainds,bag);
-% confMatrix = evaluate(categoryClassifier,Trainds);
-% classifier = fitcauto(predFeatures,Trainds.Labels,"Learners","all", ...
-%     "OptimizeHyperparameters","auto","HyperparameterOptimizationOptions", ...
-%     struct('UseParalle',true,'MaxTime',1000));
+bar(training_descriptors_vq(1,:),'r'); 
+xticks(1:10:size(Codebook,1));
+xticklabels; % Rotate x-axis labels by 90 degrees
+ytickformat("percentage")

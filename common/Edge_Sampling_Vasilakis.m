@@ -64,10 +64,9 @@ for i = 1:nImages
 
     % read in image
 
-    % Η συνάρτηση απαιτεί τις μετασχηματισμένες κατά ποιότητα και μέγεθος
-    % εικόνες. Για να μην χρειαστεί λοιπόν να ενώσουμε τα επιμέρους
-    % datastores μεταξύ τους, μετασχηματίζουμε το αρχικό datastore
-    % ακολουθώντας τις διαδικασίες που γίνονται και στο κεντρικό αρχείο.
+    % The function requires the quality and size transformed images. So to avoid having to join the 
+    % individual datastores together, we transform the original datastore by following the same 
+    % procedures as the main file.
 
 
     im = read(gray_resized_datastore);
@@ -168,9 +167,6 @@ for i = 1:nImages
         title(['Interest regions on image: ',num2str(i)]);
 
     end
-
-
-
 
 end
 
