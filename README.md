@@ -1,6 +1,6 @@
 # Bag of Features Image Classification in MATLAB
 
-This project is inspired by the code snippets available from the [ICCV of 2005](https://people.csail.mit.edu/fergus/iccv2005/bagwords.html). It implements a Bag of Features model for image classification in MATLAB. The model involves several steps including feature extraction, vector quantization, and classification using the intrinsic functions of MATLAB. 
+This project is inspired by the code snippets available from the [ICCV of 2005](https://people.csail.mit.edu/fergus/iccv2005/bagwords.html). It implements a Bag of Features model for image classification in MATLAB. The model involves several steps including feature extraction, vector quantization, and classification using the intrinsic functions of MATLAB. It is a simple form of implementation with quite few changes compared to the initial files that are provided in the ICCV. This work is conducted for research purposes in the context of my thesis.
 
 ## Project Highlights
 
@@ -30,5 +30,8 @@ To run this project:
 
 This project is licensed under the MIT License. See the LICENSE file for details.
 
-![image](https://github.com/NickTy-byte/Bag-of-Features/assets/68824495/9650581c-220e-4629-a115-e3b0cc97cda7) ![image](https://github.com/NickTy-byte/Bag-of-Features/assets/68824495/5bfa844f-2bf3-4dd8-8340-688351ea1d6c)
+![image](https://github.com/NickTy-byte/Bag-of-Features/assets/68824495/9650581c-220e-4629-a115-e3b0cc97cda7) 
+![image](https://github.com/NickTy-byte/Bag-of-Features/assets/68824495/5bfa844f-2bf3-4dd8-8340-688351ea1d6c)
+![image](https://github.com/NickTy-byte/Bag-of-Features/assets/68824495/a2118543-6eb1-4280-84be-6417bb587c22)
+
 
