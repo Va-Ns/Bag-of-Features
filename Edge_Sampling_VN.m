@@ -1,38 +1,49 @@
 function [gray_resized_datastore,Variables] = Edge_Sampling_Vasilakis(imageDatastore,XScale,Options,Plot)
 
-%% Simple interest operator that:
-  %    1. Runs Canny edge detector on image
-  %    2. Sample Interest_Point.Max_Points points from set of edgels, weighted according to their 
-  %       intensity
-  %    3. For each sample, set scale by drawing from uniform distribution over Interest_Point.Scale
-    
-  %% Inputs: 
-  %      1. image_file_names - cell array of filenames of all images to be processed
-  %      2. output_file_names - cell array of output filenames
-  %      3. Interest_Point - structure holding all settings of the interest operator
-  
-  % Outputs:
-  %      None - it saves the results for each image to the files
-  %      specified in output_file_names.
-  %      Each file holds 4 variables:
-  %          x - x coordinates of points (1 x Interest_Point.Max_Points)
-  %          y - y coordinates of points (1 x Interest_Point.Max_Points)
-  %          scale - characteristic scale of points (radius, in pixels)  (1 x Interest_Point.Max_Points)
-  %          score - importance measure of each point, determined by edge strength of pixels (1 x Interest_Point.Max_Points).
+%% Edge Sampling Operator:
+% This function implements an edge sampling operator that:
+%    1. Converts images to grayscale and resizes them based on a specified scale.
+%    2. Detects edges in the images using the Canny edge detector.
+%    3. Samples a specified maximum number of points (edgels) from the detected edges, optionally weighted by edge strength.
+%    4. Assigns a scale to each sampled point by drawing from a uniform distribution over a specified range.
+%    5. Optionally plots the results for visualization.
 
-    
-  % This code snippet is formed having as a base the code provided  by R.Fergus 
-  % (fergus@csail.mit.edu) at the ICCV of 2005 (03/10/05). 
+%% Inputs:
+%    imageDatastore: An ImageDatastore object containing the images to be processed.
+%    XScale: The target scale to resize the images to. The resizing is proportional to maintain aspect ratio.
+%    Options: A structure containing the following fields:
+%       - Max_Points: The maximum number of points to sample from the detected edges.
+%       - Scale: A range [min, max] from which to draw the scale for each sampled point.
+%       - Weighted_Sampling: A flag indicating whether to weight the sampling by edge strength.
+%       - WorkspaceDir: The directory where output variables will be saved.
+%    Plot: A structure containing the following field:
+%       - Show: A flag indicating whether to plot the results.
+
+%% Outputs:
+%    gray_resized_datastore: An ImageDatastore object containing the resized grayscale images.
+%    Variables: A structure containing the following fields:
+%       - x: The x coordinates of the sampled points.
+%       - y: The y coordinates of the sampled points.
+%       - scale: The scales assigned to the sampled points.
+%       - score: The edge strengths of the sampled points.
+%       - interest_points: A matrix containing the x and y coordinates of the sampled points for each image.
+
+%% Disclaimer!
+
+% A big part of this code snippet is formed based on the Edge_Sampling.m file created by R.Fergus 
+% (fergus@csail.mit.edu) at the ICCV of 2005 (03/10/05)
+
+
 
 arguments
     imageDatastore            {mustBeUnderlyingType(imageDatastore, ...
                                                               "matlab.io.datastore.ImageDatastore")}
     XScale                    {mustBePositive,mustBeInteger,mustBeNonmissing} = 200
     Options.Max_Points        {mustBePositive,mustBeInteger,mustBeNonmissing} = 200
-    Options.Scale             (1,:) = 10:30;
+    Options.Scale             (1,:)                                           = 10:30;
     Options.Weighted_Sampling {mustBePositive,mustBeInteger,mustBeNonmissing} = 1
     Options.WorkspaceDir           {mustBeText} 
-    Plot.Show                 {mustBeNumericOrLogical} = false
+    Plot.Show                 {mustBeNumericOrLogical}                        = false
 end
        
    

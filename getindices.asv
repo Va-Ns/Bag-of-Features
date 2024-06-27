@@ -34,7 +34,8 @@ function Indices = getindices(Trainds,Testds)
 %% Example Usage:
 % Assuming Trainds and Testds are already defined ImageDatastore objects:
 % Indices = getindices(Trainds, Testds);
-% This will return a structure with adjusted numerical indices for both training and testing images.
+% This will return a structure with adjusted numerical indices for both
+% training and testing images.
     
     for i = 1:length(Trainds.Files)
         

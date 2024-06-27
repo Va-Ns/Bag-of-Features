@@ -1,28 +1,69 @@
 function [gray_resized_datastore,Variables] = Edge_Sampling_Vasilakis(imageDatastore,XScale,Options,Plot)
 
-%% Simple interest operator that:
-  %    1. Runs Canny edge detector on image
-  %    2. Sample Interest_Point.Max_Points points from set of edgels, weighted according to their 
-  %       intensity
-  %    3. For each sample, set scale by drawing from uniform distribution over Interest_Point.Scale
-    
-  %% Inputs: 
-  %      1. image_file_names - cell array of filenames of all images to be processed
-  %      2. output_file_names - cell array of output filenames
-  %      3. Interest_Point - structure holding all settings of the interest operator
-  
-  % Outputs:
-  %      None - it saves the results for each image to the files
-  %      specified in output_file_names.
-  %      Each file holds 4 variables:
-  %          x - x coordinates of points (1 x Interest_Point.Max_Points)
-  %          y - y coordinates of points (1 x Interest_Point.Max_Points)
-  %          scale - characteristic scale of points (radius, in pixels)  (1 x Interest_Point.Max_Points)
-  %          score - importance measure of each point, determined by edge strength of pixels (1 x Interest_Point.Max_Points).
+%% Edge Sampling Operator:
+% This function implements an edge sampling operator that:
+%    1. Converts images to grayscale and resizes them based on a specified scale.
+%    2. Detects edges in the images using the Canny edge detector.
+%    3. Samples a specified maximum number of points (edgels) from the detected edges, optionally weighted by edge strength.
+%    4. Assigns a scale to each sampled point by drawing from a uniform distribution over a specified range.
+%    5. Optionally plots the results for visualization.
 
-    
-  % This code snippet is formed having as a base the code provided  by R.Fergus 
-  % (fergus@csail.mit.edu) at the ICCV of 2005 (03/10/05). 
+%% Inputs:
+%    imageDatastore: An ImageDatastore object containing the images to be processed.
+%    XScale: The target scale to resize the images to. The resizing is proportional to maintain aspect ratio.
+%    Options: A structure containing the following fields:
+%       - Max_Points: The maximum number of points to sample from the detected edges.
+%       - Scale: A range [min, max] from which to draw the scale for each sampled point.
+%       - Weighted_Sampling: A flag indicating whether to weight the sampling by edge strength.
+%       - WorkspaceDir: The directory where output variables will be saved.
+%    Plot: A structure containing the following field:
+%       - Show: A flag indicating whether to plot the results.
+
+%% Outputs:
+%    gray_resized_datastore: An ImageDatastore object containing the resized grayscale images.
+%    Variables: A structure containing the following fields:
+%       - x: The x coordinates of the sampled points.
+%       - y: The y coordinates of the sampled points.
+%       - scale: The scales assigned to the sampled points.
+%       - score: The edge strengths of the sampled points.
+%       - interest_points: A matrix containing the x and y coordinates of the sampled points for each image.
+
+%% Example Usage:
+% Assuming you have an ImageDatastore object named 'imgDatastore' containing your images,
+% and you want to resize the images to a scale of 200, sample a maximum of 200 points from the detected edges,
+% with a scale range for each point between 10 and 30, enable weighted sampling, and save the output variables
+% in a directory named 'outputDir'. Additionally, you want to visualize the results.
+% Here's how you could call the Edge_Sampling_Vasilakis function:
+
+% Define the ImageDatastore
+%imgDatastore = imageDatastore('path/to/your/images');
+
+% Define the target scale for resizing the images
+%XScale = 200;
+
+% Define the options for edge sampling
+%Options.Max_Points = 200;
+%Options.Scale = [10, 30];
+%Options.Weighted_Sampling = 1;
+%Options.WorkspaceDir = 'path/to/outputDir';
+
+% Define the plot option
+%Plot.Show = true;
+
+% Call the function
+[gray_resized_datastore, Variables] = Edge_Sampling_Vasilakis(imgDatastore, XScale, Options, Plot);
+
+% Now, 'gray_resized_datastore' contains the resized grayscale images,
+% and 'Variables' contains the sampled points, their scales, and scores.
+
+
+
+%% Disclaimer!
+
+% A big part of this code snippet is formed based on the Edge_Sampling.m file created by R.Fergus 
+% (fergus@csail.mit.edu) at the ICCV of 2005 (03/10/05)
+
+
 
 arguments
     imageDatastore            {mustBeUnderlyingType(imageDatastore, ...
@@ -31,7 +72,7 @@ arguments
     Options.Max_Points        {mustBePositive,mustBeInteger,mustBeNonmissing} = 200
     Options.Scale             (1,:) = 10:30;
     Options.Weighted_Sampling {mustBePositive,mustBeInteger,mustBeNonmissing} = 1
-    Options.BaseDir           {mustBeText} = getcurrentDirectory
+    Options.WorkspaceDir           {mustBeText} 
     Plot.Show                 {mustBeNumericOrLogical} = false
 end
        
@@ -178,24 +219,17 @@ Variables.scale = scale;
 Variables.score = score;
 Variables.interest_points = interest_points;
 
-xfilepath = fullfile(Options.BaseDir,'x.mat');
-yfilepath = fullfile(Options.BaseDir,'y.mat');
-scalefilepath = fullfile(Options.BaseDir,'scale.mat');
-scorefilepath = fullfile(Options.BaseDir,'score.mat');
-interest_pointsfilepath = fullfile(Options.BaseDir,'interest_points.mat');
+xfilepath = fullfile(Options.WorkspaceDir,'x.mat');
+yfilepath = fullfile(Options.WorkspaceDir,'y.mat');
+scalefilepath = fullfile(Options.WorkspaceDir,'scale.mat');
+scorefilepath = fullfile(Options.WorkspaceDir,'score.mat');
+interest_pointsfilepath = fullfile(Options.WorkspaceDir,'interest_points.mat');
 
 save(xfilepath,'x');
-save(yfilepath,'x');
-save(scalefilepath,'x');
-save(scorefilepath,'x');
-save(xfilepath,'x');
+save(yfilepath,'y');
+save(scalefilepath,'scale');
+save(scorefilepath,'score');
+save(interest_pointsfilepath,'interest_points');
 
-
-
-
-save('Workspace\interest_points\y.mat','y');
-save('Workspace\interest_points\scale.mat','scale');
-save('Workspace\interest_points\score.mat','score');
-save('Workspace\interest_points\interest_points.mat','interest_points');
 
 end
