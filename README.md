@@ -1,6 +1,6 @@
 # Bag of Features Image Classification in MATLAB
 
-This project is inspired by the code snippets available from the [ICCV of 2005](https://people.csail.mit.edu/fergus/iccv2005/bagwords.html). It implements a Bag of Features model for image classification in MATLAB. The model involves several steps including feature extraction, vector quantization, and classification using the intrinsic functions of MATLAB. It is a simple form of implementation with quite few changes compared to the initial files that are provided in the ICCV. This work is conducted for research purposes in the context of my thesis.
+This project is inspired by the code snippets available from the [ICCV of 2005](https://people.csail.mit.edu/fergus/iccv2005/bagwords.html). It implements a Bag of Features model for image classification in MATLAB. The model involves several steps including feature extraction, vector quantization, and classification using the intrinsic functions of MATLAB. 
 
 ## Project Highlights
 
@@ -24,7 +24,9 @@ To run this project:
 3. Open MATLAB and navigate to the cloned project directory.
 4. Run the `Bag_Of_Features.m` script to start the image classification model.
 
+## Disclaimer
 
+This repository is a simple form of reproduction of the Bag of Visual Words algorithm with quite a few changes compared to the initial files that are provided in the ICCV. In keeping with that theme, one can identify files, such as `compute_descriptors.ln`, `discrete_sampler.m`, `vgg_*`, that belong in the initial draft of the contributors yet are important for the completion of this work. All acknowledgements for those files go to the authors! 
 
 ## License
 
