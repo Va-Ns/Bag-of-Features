@@ -26,7 +26,7 @@ To run this project:
 
 ## Disclaimer
 
-This repository is a simple form of reproduction of the Bag of Visual Words algorithm with quite a few changes compared to the initial files that are provided in the ICCV. In keeping with that theme, one can identify files, such as `compute_descriptors.ln`, `discrete_sampler.m`, `vgg_*`, that belong in the initial draft of the contributors yet are important for the completion of this work. All acknowledgements for those files go to the authors! 
+This repository is a simple form of reproduction with quite a few changes compared to the initial files that are provided in the ICCV. In keeping with that theme, one can identify files, such as `compute_descriptors.ln`, `discrete_sampler.m`, `vgg_*`, that belong in the initial draft of the contributors yet are important for the completion of this work. All acknowledgements for those files go to the authors! 
 
 ## License
 
