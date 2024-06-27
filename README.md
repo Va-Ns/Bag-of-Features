@@ -1,6 +1,6 @@
 # Bag of Features Image Classification in MATLAB
 
-This project is inspired by the code snippets available from the [ICCV of 2005](https://people.csail.mit.edu/fergus/iccv2005/bagwords.html). It implements a Bag of Features model for image classification in MATLAB. The model involves several steps including feature extraction, vector quantization, and classification using the intrinsic functions of MATLAB.
+This project is inspired by the code snippets available from the [ICCV of 2005](https://people.csail.mit.edu/fergus/iccv2005/bagwords.html). It implements a Bag of Features model for image classification in MATLAB. The model involves several steps including feature extraction, vector quantization, and classification using the intrinsic functions of MATLAB. 
 
 ## Project Highlights
 
@@ -23,6 +23,8 @@ To run this project:
 2. Clone this repository to your local machine.
 3. Open MATLAB and navigate to the cloned project directory.
 4. Run the `Bag_Of_Features.m` script to start the image classification model.
+
+
 
 ## License
 
