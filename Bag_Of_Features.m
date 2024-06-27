@@ -44,7 +44,7 @@ else
 end
 tic;
 
-[Gray_resized_datastore,Variables] = Edge_Sampling_Vasilakis(Datastore,XScale,"WorkspaceDir", ...
+[Gray_resized_datastore,Variables] = Edge_Sampling_VN(Datastore,XScale,"WorkspaceDir", ...
                                                                 [getcurrentDirectory,'\Workspace']);
 
 total_time = toc; 
@@ -55,7 +55,6 @@ fprintf('Total number of images: %d, mean time per image: %f secs\n', numel(Data
 
 %% Feature extraction using SIFT
 
-%load RUN_DIR\interest_points\interest_points.mat
 reset(Gray_resized_datastore)
 tic;
 features = cell(1,length(Datastore.Files));
@@ -149,3 +148,6 @@ bar(training_descriptors_vq(1,:),'r');
 xticks(1:10:size(Codebook,1));
 xticklabels; 
 ytickformat("percentage")
+xlabel("Codebook components")
+ylabel("Percentage of participation for every center")
+title("Bag of Word of an image")

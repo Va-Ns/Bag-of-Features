@@ -44,7 +44,7 @@ else
 end
 tic;
 
-[Gray_resized_datastore,Variables] = Edge_Sampling_Vasilakis(Datastore,XScale,"WorkspaceDir", ...
+[Gray_resized_datastore,Variables] = Edge_Sampling_VN(Datastore,XScale,"WorkspaceDir", ...
                                                                 [getcurrentDirectory,'\Workspace']);
 
 total_time = toc; 
