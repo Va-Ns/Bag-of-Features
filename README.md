@@ -6,7 +6,7 @@ This project is inspired by the code snippets available from the [ICCV of 2005](
 
 - **Feature Extraction**: Utilizes SIFT features to identify points of interest in images.
 - **Vector Quantization**: Employs k-means clustering to quantize feature vectors.
-- **Classification**: Uses a Naive Bayes classifier for the final classification of images.
+- **Classification**: Uses a Support Vector Machine classifier with a grid search for the optimization of its parameters.
 
 ## Project Structure
 
@@ -15,7 +15,6 @@ This project is inspired by the code snippets available from the [ICCV of 2005](
 - `compute_descriptors.ln`, `discrete_sampler.m`, `vgg_*`: Various utility scripts for feature extraction and processing.
 - `Edge_Sampling.m`, `Edge_Sampling_Vasilakis.m`: Scripts for edge sampling techniques.
 - `images/`: Directory containing image datasets for training and testing the model.
-- `.tours/`: Contains a CodeTour file (`bag-of-features.tour`) guiding through the project setup and execution.
 
 ## How to Run
 
