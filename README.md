@@ -32,6 +32,5 @@ This repository is a simple form of reproduction with quite a few changes compar
 
 Following the notion of the authors, this code is for teaching/research purposes only.
 
-<img src = "https://github.com/NickTy-byte/Bag-of-Features/assets/68824495/9650581c-220e-4629-a115-e3b0cc97cda7" width="500" height="500"> 
-<img src = "https://github.com/NickTy-byte/Bag-of-Features/assets/68824495/5bfa844f-2bf3-4dd8-8340-688351ea1d6c" width="500" height="500"> 
+<img src = "https://github.com/NickTy-byte/Bag-of-Features/assets/68824495/9650581c-220e-4629-a115-e3b0cc97cda7" width="500" height="500">  <img src = "https://github.com/NickTy-byte/Bag-of-Features/assets/68824495/5bfa844f-2bf3-4dd8-8340-688351ea1d6c" width="500" height="500"> 
 <img src = "https://github.com/NickTy-byte/Bag-of-Features/assets/68824495/a2118543-6eb1-4280-84be-6417bb587c22"> 
