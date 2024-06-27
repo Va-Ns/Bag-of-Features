@@ -2,13 +2,13 @@
 
 clear;clc;close('all');
 
-
 % Set a seed for reproducibility of the experiment
 s = rng(1);
 
-mkdir RUN_DIR\Codebook
-mkdir RUN_DIR\SIFT_features_of_interest_points
-mkdir RUN_DIR\Quantized_vector_descriptors
+mkdir Workspace\Codebook
+mkdir Workspace\SIFT_features_of_interest_points
+mkdir Workspace\Quantized_vector_descriptors
+mkdir Workspace\SIFT_features_of_interest_points
 
 %% Initiate the parpool in case you need man power
 % delete(gcp)
@@ -20,7 +20,6 @@ mkdir RUN_DIR\Quantized_vector_descriptors
 fileLocation = uigetdir();
 Datastore = imageDatastore(fileLocation,"IncludeSubfolders",true,"LabelSource","foldernames");
 initialLabels = countEachLabel(Datastore);
-
 
 %% Preprocessing
 
@@ -45,7 +44,8 @@ else
 end
 tic;
 
-Gray_resized_datastore = Edge_Sampling_Vasilakis(Datastore,XScale);
+[Gray_resized_datastore,Variables] = Edge_Sampling_Vasilakis(Datastore,XScale,"WorkspaceDir", ...
+                                                                [getcurrentDirectory,'\Workspace']);
 
 total_time = toc; 
 fprintf('\nFinished running interest point operator\n');
@@ -55,7 +55,7 @@ fprintf('Total number of images: %d, mean time per image: %f secs\n', numel(Data
 
 %% Feature extraction using SIFT
 
-load RUN_DIR\interest_points\interest_points.mat
+%load RUN_DIR\interest_points\interest_points.mat
 reset(Gray_resized_datastore)
 tic;
 features = cell(1,length(Datastore.Files));
@@ -63,15 +63,15 @@ features = cell(1,length(Datastore.Files));
 for i = 1:length(Datastore.Files)
 
     im = read(Gray_resized_datastore);
-    [features{i},validPoints{i}] = extractFeatures(im,interest_points{i},"Method","SIFT");
+    [features{i},validPoints{i}] = extractFeatures(im,Variables.interest_points{i},"Method","SIFT");
 
 end
 
 total_time=toc;
 
-
-save('RUN_DIR\SIFT_features_of_interest_points\SIFT_features.mat','features');
-save('RUN_DIR\SIFT_features_of_interest_points\validPoints.mat','validPoints');
+cd(getcurrentDirectory)
+save('Workspace\SIFT_features_of_interest_points\SIFT_features.mat','features');
+save('Workspace\SIFT_features_of_interest_points\validPoints.mat','validPoints');
 
 fprintf('\nFinished running descriptor operator\n');
 
@@ -83,6 +83,7 @@ fprintf('Total number of images: %d, mean time per image: %f secs\n', length(Dat
 
 [Trainds,Testds] = splitEachLabel(Gray_resized_datastore.UnderlyingDatastores{:},0.75,'randomized');
 
+
 Indices = getindices(Trainds,Testds);
 descriptors = [];
 for i = 1:length(Indices.Train_Indices)
@@ -91,10 +92,10 @@ for i = 1:length(Indices.Train_Indices)
 
 end
 
-[~,Codebook,sse] = kmeans(gpuArray(double(descriptors)),300,"MaxIter",10, "Replicates",10);
+[~,Codebook,~] = kmeans(gpuArray(double(descriptors)),300,"MaxIter",10,"Replicates",10);
 
-save('RUN_DIR\Codebook\Codebook.mat', 'Codebook');
-save('RUN_DIR\Codebook\SSE.mat', 'sse');
+Codebookfilepath = fullfile([getcurrentDirectory,'\Workspace\Codebook'],'Codebook.mat'); 
+save(Codebookfilepath, 'Codebook');
 
 training_descriptors_vq = zeros(length(Indices.Train_Indices),size(Codebook,1));
 testing_descriptors_vq = zeros(length(Indices.Test_Indices),size(Codebook,1));
@@ -122,24 +123,29 @@ for i=1:length(Indices.Test_Indices)
     testing_descriptors_vq(i,:)= N./length(index);
    
 end
-save("RUN_DIR\Quantized_vector_descriptors\training_descriptors_vq.mat",'training_descriptors_vq');
-save("RUN_DIR\Quantized_vector_descriptors\testing_descriptors_vq.mat",'testing_descriptors_vq');
+
+TrainingVQDfilepath = fullfile([getcurrentDirectory,'\Workspace\Quantized_vector_descriptors'], ...
+                                                                     'training_descriptors_vq.mat');
+TestingVQDfilepath = fullfile([getcurrentDirectory,'\Workspace\Quantized_vector_descriptors'], ...
+                                                                      'testing_descriptors_vq.mat');
+
+save(TrainingVQDfilepath,'training_descriptors_vq');
+save(TestingVQDfilepath,'testing_descriptors_vq');
     
 %% Training a Classifier
 
-classifier = fitcauto(training_descriptors_vq,Trainds.Labels, ...
-    'OptimizeHyperparameters','all','HyperparameterOptimizationOptions', ...
-    struct('MaxObjectiveEvaluations',100,'Kfold',10));
+classifier = fitcsvm(training_descriptors_vq,Trainds.Labels, 'OptimizeHyperparameters', ...
+    'all','HyperparameterOptimizationOptions', struct('MaxObjectiveEvaluations',100,'Kfold',10,...
+    'Optimizer','gridsearch','NumGridDivisions',20));
 [predictedLabels, scores]= predict(classifier,testing_descriptors_vq);
 
 %% Evaluating the Classifier
 
 confusionMatrix = confusionmat(Testds.Labels,predictedLabels);
 Accuracy = sum(diag(confusionMatrix)) / sum(confusionMatrix(:))
-
-%% Απεικόνιση του Bag of Words 
+%% Visualize the Bag of Visual Words for an image 
 
 bar(training_descriptors_vq(1,:),'r'); 
 xticks(1:10:size(Codebook,1));
-xticklabels; % Rotate x-axis labels by 90 degrees
+xticklabels; 
 ytickformat("percentage")
