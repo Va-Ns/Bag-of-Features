@@ -1,25 +1,30 @@
 # Bag of Features Image Classification in MATLAB
 
-This project is inspired by the code snippets available from the [ICCV of 2005](https://people.csail.mit.edu/fergus/iccv2005/bagwords.html). It implements a Bag of Features model for image classification in MATLAB. The model involves several steps including feature extraction, vector quantization, and classification using the intrinsic functions of MATLAB.
+This project is inspired by the code snippets available from the [ICCV of 2005](https://people.csail.mit.edu/fergus/iccv2005/bagwords.html). It implements a Bag of Features model for image classification in MATLAB. The model involves several steps including feature extraction, vector quantization, and classification using the intrinsic functions of MATLAB. 
+
+## Project Highlights
+
+- **Feature Extraction**: Utilizes SIFT features to identify points of interest in images.
+- **Vector Quantization**: Employs k-means clustering to quantize feature vectors.
+- **Classification**: Uses a Support Vector Machine classifier with a grid search for the optimization of its parameters.
 
 ## Project Structure
 
-- `Bag_Of_Features.m`: The main script for the project.
-- `common/`: Contains various utility scripts and functions used in the project.
-- `experiments/`: Contains scripts or data for testing the performance of the model.
-- `images/`: Contains the image data that the model is trained and tested on.
-- `RUN_DIR/`: Contains several subdirectories for different stages of the model, such as feature extraction and vector quantization.
+- `Bag_Of_Features.m`: The main script that orchestrates the model execution.
+- `BoW_final.mlx`: A MATLAB Live Script with detailed explanations and results.
+- `compute_descriptors.ln`, `discrete_sampler.m`, `vgg_*`: Various utility scripts for feature extraction and processing.
+- `Edge_Sampling.m`, `Edge_Sampling_Vasilakis.m`: Scripts for edge sampling techniques.
+- `images/`: Directory containing image datasets for training and testing the model.
 
 ## How to Run
 
-1. Ensure you have MATLAB installed and set up on your machine.
+To run this project:
+1. Ensure MATLAB is installed on your system.
 2. Clone this repository to your local machine.
-3. Open MATLAB and navigate to the project directory.
-4. Run the `Bag_Of_Features.m` script to start the model.
+3. Open MATLAB and navigate to the cloned project directory.
+4. Run the `Bag_Of_Features.m` script to start the image classification model.
 
-## Contributing
 
-Contributions are welcome. Please submit a pull request if you have something to add or fix.
 
 ## License
 
