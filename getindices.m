@@ -1,6 +1,5 @@
 function Indices = getindices(Trainds,Testds)
 
-function Indices = getindices(Trainds,Testds)
 %% GETINDICES Function Overview:
 % This function extracts numerical indices from the filenames of images in
 % training and testing datasets. It is designed to work with MATLAB's
