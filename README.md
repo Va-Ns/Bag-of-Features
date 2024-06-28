@@ -37,10 +37,10 @@ The produced data, meaning:
 - The _SIFT features of the interest points_
 
 Along with: 
-- The interest points
-- The scale
-- The score and
-- The x and y coordinates of the interest points
+- The _Interest points_
+- The _Scale_
+- The _Score_ and
+- The _x_ and _y_ coordinates of the interest points
 
 are located in the `Workspace` file
 
