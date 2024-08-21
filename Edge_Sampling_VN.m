@@ -1,4 +1,4 @@
-function [gray_resized_datastore,Variables] = Edge_Sampling_Vasilakis(imageDatastore,XScale,Options,Plot)
+function [gray_resized_datastore,Variables] = Edge_Sampling_VN(imageDatastore,XScale,Options,Plot)
 
 %% Edge Sampling Operator:
 % This function implements an edge sampling operator that:

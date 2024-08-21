@@ -45,7 +45,8 @@ end
 tic;
 
 [Gray_resized_datastore,Variables] = Edge_Sampling_VN(Datastore,XScale,"WorkspaceDir", ...
-                                                                [getcurrentDirectory,'\Workspace']);
+                                                                [getcurrentDirectory,'\Workspace'], ...
+                                                                "Show",true);
 
 total_time = toc; 
 fprintf('\nFinished running interest point operator\n');
@@ -144,10 +145,105 @@ confusionMatrix = confusionmat(Testds.Labels,predictedLabels);
 Accuracy = sum(diag(confusionMatrix)) / sum(confusionMatrix(:))
 %% Visualize the Bag of Visual Words for an image 
 
-bar(training_descriptors_vq(1,:),'r'); 
-xticks(1:10:size(Codebook,1));
-xticklabels; 
-ytickformat("percentage")
-xlabel("Codebook components")
-ylabel("Percentage of participation for every center")
-title("Bag of Word of an image")
+reset(Datastore)
+% Define the index of the image to visualize
+imageIndex = 1;
+
+% Get the features of the first image
+imageFeatures = double(features{Indices.Train_Indices(imageIndex)});
+
+% Compute the nearest codebook centers for the features of the first image
+[~, index] = pdist2(Codebook, imageFeatures, 'euclidean', 'Smallest', 1);
+
+% Compute the histogram of the assignments
+N = histcounts(index, size(Codebook, 1));
+
+% Normalize the histogram to form the final vector representation
+vectorRepresentation = N / length(index);
+
+% Reduce the dimensionality of the codebook using PCA
+[coeff, score, ~] = pca(Codebook);
+reducedCodebook = score(:, 1:2);
+
+% Create Voronoi cells for the reduced codebook
+figure;
+voronoi(reducedCodebook(:, 1), reducedCodebook(:, 2));
+hold on;
+
+% Highlight the centers that the image was assigned to
+highlightedCenters = unique(index);
+scatter(reducedCodebook(highlightedCenters, 1), reducedCodebook(highlightedCenters, 2), 100, 'r', 'filled');
+
+% Set axis limits and labels
+axis equal;
+xlabel('PCA Component 1');
+ylabel('PCA Component 2');
+title('Voronoi Cells of Codebook with Highlighted Centers');
+hold off;
+
+% Load and display the initial image
+figure;
+subplot(1, 2, 1);
+imageFile = Datastore.Files{Indices.Train_Indices(imageIndex)};
+image = imread(imageFile);
+imshow(image);
+title('Initial Image');
+
+% Plot the histogram representation and highlight the centers
+subplot(1, 2, 2);
+bar(vectorRepresentation, 'r');
+hold on;
+highlightedValues = vectorRepresentation(highlightedCenters);
+bar(highlightedCenters, highlightedValues, 'b');
+xticks(1:10:size(Codebook, 1));
+xlabel("Codebook components");
+ylabel("Percentage of participation for every center");
+title("Histogram Representation with Highlighted Centers");
+legend('All Centers', 'Assigned Centers');
+hold off;
+
+%% Depict the vector of 5 images using t-SNE
+% Define the number of images to visualize
+numImages = 5;
+% Initialize a matrix to store the vector representations
+vectorRepresentations = zeros(numImages, size(Codebook, 1));
+% Loop through the first numImages images
+for imageIndex = 1:numImages
+    % Get the features of the image
+    imageFeatures = double(features{Indices.Train_Indices(imageIndex)});
+    % Compute the nearest codebook centers for the features of the image
+    [~, index] = pdist2(Codebook, imageFeatures, 'euclidean', 'Smallest', 1);
+    % Compute the histogram of the assignments
+    N = histcounts(index, size(Codebook, 1));
+    % Normalize the histogram to form the final vector representation
+    vectorRepresentations(imageIndex, :) = N / length(index);
+end
+% Use t-SNE on the vectorRepresentations to reduce them to 3D
+reducedVectorRepresentations = tsne(vectorRepresentations, 'NumDimensions', 3);
+% Plot the vector representations in a 3D space
+figure('Color', 'w'); % Set background color to white
+set(gcf, 'Units', 'normalized', 'Position', [0.1 0.1 0.8 0.8]); % Resize the figure
+hold on;
+colormap(parula(numImages)); % Use a colorful colormap
+scatter3(reducedVectorRepresentations(:, 1), reducedVectorRepresentations(:, 2), reducedVectorRepresentations(:, 3), 100, 1:numImages, 'filled');
+textColor = 'k'; % Set the text color for all vectors
+for i = 1:numImages
+    % Plot the vector representation
+    quiver3(0, 0, 0, reducedVectorRepresentations(i, 1), reducedVectorRepresentations(i, 2), reducedVectorRepresentations(i, 3), 'Color', colors(i, :), 'LineWidth', 2);
+    % Place the text label in a distinct location
+    textX = reducedVectorRepresentations(i, 1) * 1.1;
+    textY = reducedVectorRepresentations(i, 2) * 1.1;
+    textZ = reducedVectorRepresentations(i, 3) * 1.1;
+    text(textX, textY, textZ, sprintf('Image %d', i), 'FontSize', 12, 'Color', textColor, 'HorizontalAlignment', 'center');
+end
+xlabel('t-SNE Dimension 1', 'FontSize', 14);
+ylabel('t-SNE Dimension 2', 'FontSize', 14);
+zlabel('t-SNE Dimension 3', 'FontSize', 14);
+title('3D Vector Representations of the First 5 Images using t-SNE', 'FontSize', 16);
+grid on;
+view(3); % Set the default 3D view
+box on;
+% Add a light source and adjust the lighting
+camlight('headlight');
+lighting('gouraud');
+hold off;
